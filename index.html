@@ -12,6 +12,7 @@
           extend: {
             colors: {
               military: {
+                950: '#050a05',
                 900: '#0a0f0a', // Deep dark green/black
                 800: '#111c11', // Dark camouflage
                 700: '#1e2e1e', // Panel background
@@ -25,35 +26,137 @@
             fontFamily: {
               mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
               sans: ['ui-sans-serif', 'system-ui', '-apple-system', "Segoe UI", 'Roboto', "Helvetica Neue", 'Arial', 'sans-serif'],
+              tech: ['"Share Tech Mono"', 'monospace'],
+            },
+            animation: {
+              'scan': 'scan 4s linear infinite',
+              'blink': 'blink 1s step-end infinite',
+              'glitch': 'glitch 1s linear infinite',
+              'noise': 'noise 0.2s infinite',
+            },
+            keyframes: {
+              scan: {
+                '0%': { transform: 'translateY(-100%)' },
+                '100%': { transform: 'translateY(100%)' },
+              },
+              blink: {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0' },
+              },
+              noise: {
+                '0%': { transform: 'translate(0,0)' },
+                '10%': { transform: 'translate(-1px,-1px)' },
+                '20%': { transform: 'translate(1px,1px)' },
+                '30%': { transform: 'translate(-1px,1px)' },
+                '40%': { transform: 'translate(1px,-1px)' },
+                '100%': { transform: 'translate(0,0)' },
+              }
             }
           }
         }
       }
     </script>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+      
       body {
-        background-color: #050505;
+        background-color: #050a05;
         color: #e5e7eb;
+        overflow-x: hidden;
+        cursor: crosshair;
+        font-family: 'Share Tech Mono', monospace;
       }
+      
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
-        width: 8px;
+        width: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: #111c11; 
+        background: #0a0f0a; 
       }
       ::-webkit-scrollbar-thumb {
         background: #2d442d; 
-        border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
         background: #4ade80; 
       }
+
       .grid-bg {
         background-size: 40px 40px;
         background-image:
-          linear-gradient(to right, rgba(45, 68, 45, 0.1) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(45, 68, 45, 0.1) 1px, transparent 1px);
+          linear-gradient(to right, rgba(45, 68, 45, 0.15) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(45, 68, 45, 0.15) 1px, transparent 1px);
+      }
+
+      /* CRT Effects */
+      .crt-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(
+          rgba(18, 16, 16, 0) 50%, 
+          rgba(0, 0, 0, 0.15) 50%
+        );
+        background-size: 100% 4px;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.4;
+      }
+      
+      .vignette {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+        pointer-events: none;
+        z-index: 9998;
+      }
+
+      /* Noise Texture */
+      .noise-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9000;
+        opacity: 0.03;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAA5OTkAAABMTExERERmZmYzMzPMzMxmoqOmAAAACHRSTlMAMwAyzMz/zMzOujvcAAAAQElEQVQ4y2NgQAX8DIoM2AALCwvb/2HAgA38//8fIxEgm4GBgZmB4T8Dwn+EhP8I8f8gIv6DiPEDYuIPiIk/0N0EAES9JHys76PwAAAAAElFTkSuQmCC');
+      }
+
+      /* Clip Path Utils */
+      .clip-corner-4 {
+        clip-path: polygon(
+          0 0, 
+          100% 0, 
+          100% calc(100% - 10px), 
+          calc(100% - 10px) 100%, 
+          0 100%
+        );
+      }
+      
+      .clip-corner-both {
+        clip-path: polygon(
+          10px 0, 
+          calc(100% - 10px) 0, 
+          100% 10px, 
+          100% calc(100% - 10px), 
+          calc(100% - 10px) 100%, 
+          10px 100%, 
+          0 calc(100% - 10px), 
+          0 10px
+        );
+      }
+
+      /* Selection Color */
+      ::selection {
+        background: #4ade80;
+        color: #000;
       }
     </style>
   <script type="importmap">
@@ -70,6 +173,9 @@
 </script>
 </head>
   <body>
+    <div class="crt-overlay"></div>
+    <div class="vignette"></div>
+    <div class="noise-overlay"></div>
     <div id="root"></div>
   </body>
 </html>

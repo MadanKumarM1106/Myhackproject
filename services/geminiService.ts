@@ -90,3 +90,20 @@ export const generateRouteAnalysis = async (
     };
   }
 };
+
+export const sendTacticalQuery = async (message: string): Promise<string> => {
+  if (!apiKey) return "COMM LINK OFFLINE. KEY MISSING.";
+  
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: message,
+      config: {
+        systemInstruction: "You are WARCOM, an advanced military logistics AI. Respond with brevity, military jargon (Roger, Copy, Solid Copy, Oscar Mike), and tactical precision. Do not use markdown formatting like **bold**, just plain text suitable for a raw terminal output. Keep responses under 40 words.",
+      }
+    });
+    return response.text || "NO DATA RECEIVED.";
+  } catch (e) {
+    return "TRANSMISSION ERROR.";
+  }
+};
